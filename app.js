@@ -3,6 +3,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const ejs = require('ejs');
 const mongoose = require('mongoose');
+const encrypt = require('mongoose-encryption');
 require('dotenv').config()
 const app = express();
 
@@ -13,10 +14,13 @@ app.use(express.static('public'));
 const MONGO_URL = process.env.MONGO_URL
 mongoose.connect(`${MONGO_URL}`, { useNewUrlParser: true, useUnifiedTopology: true })
 
-const userSchema = {
+const userSchema = new mongoose.Schema({
   email: { type: String, required: true },
   password: { type: String, required: true },
-};
+});
+
+const secret = process.env.some_long_unguessable_secret
+userSchema.plugin(encrypt, { secret: secret, encryptedFields: ['password'] });
 
 const User = new mongoose.model('User', userSchema);
 
