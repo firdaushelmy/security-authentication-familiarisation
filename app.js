@@ -54,24 +54,24 @@ app.post('/register', function (req, res) {
 
 app.post('/login', function (req, res) {
   const username = req.body.username;
-  const password = md5(req.body.password);
+  const password = req.body.password;
 
   User.findOne({ email: username }, function (err, foundUser) {
     if (foundUser) {
-      if (foundUser.password === password) {
-        res.render('secrets');
+      bcrypt.compare(password, foundUser.password, function (err, result) {
+        if (result === true) {
+          res.render('secrets');
+          return;
+        };
+        console.log('email or password does not match');
         return;
-      } console.log('email or password does not match');
-      return;
-    }
-    console.log('error: ' + err)
-  })
-})
-
+      }); return;
+    } console.log('error: ' + err);
+  });
+});
 
 const port = process.env.PORT || 3000;
 
 app.listen(port, function () {
   console.log(`server is running on ${port}`)
 });
-
