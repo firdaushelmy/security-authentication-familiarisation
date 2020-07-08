@@ -14,6 +14,15 @@ app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static('public'));
 
+app.use(session({
+  secret: process.env.SECRET_PASS,
+  resave: false,
+  saveUninitialized: false,
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
+
 const MONGO_URL = process.env.MONGO_URL
 mongoose.connect(`${MONGO_URL}`, { useNewUrlParser: true, useUnifiedTopology: true })
 
@@ -21,6 +30,8 @@ const userSchema = new mongoose.Schema({
   email: { type: String, required: true },
   password: { type: String, required: true },
 });
+
+userSchema.plugin(passportLocalMongoose);
 
 const User = new mongoose.model('User', userSchema);
 
