@@ -57,18 +57,27 @@ app.post('/login', function (req, res) {
   const password = req.body.password;
 
   User.findOne({ email: username }, function (err, foundUser) {
+    if (err) {
+      console.log('error: ' + err);
+      return;
+    }
+    if (!foundUser) {
+      console.log('user does not exist');
+    }
     if (foundUser) {
       bcrypt.compare(password, foundUser.password, function (err, result) {
+        if (result === false) {
+          console.log('email or password does not match');
+          return;
+        }
         if (result === true) {
           res.render('secrets');
-          return;
-        };
-        console.log('email or password does not match');
-        return;
-      }); return;
-    } console.log('error: ' + err);
-  });
-});
+        }
+      })
+    }
+  })
+})
+
 
 const port = process.env.PORT || 3000;
 
