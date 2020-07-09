@@ -28,8 +28,8 @@ mongoose.connect(`${MONGO_URL}`, { useNewUrlParser: true, useUnifiedTopology: tr
 mongoose.set('useCreateIndex', true);
 
 const userSchema = new mongoose.Schema({
-  email: { type: String, required: true },
-  password: { type: String, required: true },
+  email: String,
+  password: String,
 });
 
 userSchema.plugin(passportLocalMongoose);
@@ -54,7 +54,16 @@ app.get('/register', function (req, res) {
 
 app.post('/register', function (req, res) {
 
-
+  User.register({ username: req.body.username }, req.body.password, function (err, user) {
+    if (err) {
+      console.log(err);
+      res.redirect('/register');
+    } else {
+      passport.authenticate('local')(req, res, function () {
+        console.log('registration successful');
+      })
+    }
+  })
 })
 
 app.post('/login', function (req, res) {
