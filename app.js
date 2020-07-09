@@ -25,6 +25,7 @@ app.use(passport.session());
 
 const MONGO_URL = process.env.MONGO_URL
 mongoose.connect(`${MONGO_URL}`, { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.set('useCreateIndex', true);
 
 const userSchema = new mongoose.Schema({
   email: { type: String, required: true },
@@ -34,6 +35,10 @@ const userSchema = new mongoose.Schema({
 userSchema.plugin(passportLocalMongoose);
 
 const User = new mongoose.model('User', userSchema);
+
+passport.use(User.createStrategy());
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
 
 app.get('/', function (req, res) {
   res.render('home');
