@@ -36,7 +36,7 @@ const userSchema = new mongoose.Schema({
 });
 
 userSchema.plugin(passportLocalMongoose);
-userSchema.plugin(findorCreate);
+userSchema.plugin(findOrCreate);
 
 const User = new mongoose.model('User', userSchema);
 
@@ -59,6 +59,10 @@ passport.use(new GoogleStrategy({
 app.get('/', function (req, res) {
   res.render('home');
 });
+
+app.get('/auth/google',
+  passport.authenticate('google', { scope: ['profile'] })
+);
 
 app.get('/login', function (req, res) {
   res.render('login');
