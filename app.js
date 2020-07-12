@@ -113,11 +113,15 @@ app.get('/register', function (req, res) {
 });
 
 app.get('/secrets', function (req, res) {
-  if (req.isAuthenticated()) {
-    res.render('secrets');
-  } else {
-    res.redirect('/login');
-  }
+  User.find({ secret: { $ne: null } }, function (err, foundUsers) {
+    if (err) {
+      console.log(err);
+    } else {
+      if (foundUsers) {
+        res.render('secrets', { userWithSecrets: foundUsers });
+      }
+    }
+  });
 });
 
 app.get('/submit', function (req, res) {
@@ -143,8 +147,8 @@ app.post('/submit', function (req, res) {
       }
     }
   })
-
 })
+
 app.post('/register', function (req, res) {
 
   User.register({ username: req.body.username }, req.body.password, function (err, user) {
